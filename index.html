@@ -260,12 +260,6 @@
     gap: 15px;
   }
 
-  .three-column {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-  }
-
   .loader {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #667eea;
@@ -291,7 +285,17 @@
     color: #33c;
   }
 
-  .temp-note {
+  .info-note {
+    background: #e7f3ff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #004085;
+    border-left: 4px solid #0066cc;
+  }
+
+  .manual-note {
     background: #fff3cd;
     padding: 10px;
     border-radius: 5px;
@@ -303,9 +307,6 @@
 
   @media (max-width: 600px) {
     .two-column {
-      grid-template-columns: 1fr;
-    }
-    .three-column {
       grid-template-columns: 1fr;
     }
     .result-grid {
@@ -342,60 +343,77 @@
 
   <hr>
 
-  <!-- Source Information Section -->
-  <h2>📋 Step 2: Source Information</h2>
+  <!-- Source Information Section (Auto-filled from PDF) -->
+  <h2>📋 Step 2: Source Information (Auto-filled from PDF)</h2>
   <div class="two-column">
     <div class="form-group">
       <label for="sourceSerial">Source Serial Number:</label>
-      <input type="text" id="sourceSerial" placeholder="e.g., CS-12345">
+      <input type="text" id="sourceSerial" placeholder="e.g., CS-12345" readonly style="background: #f5f5f5;">
     </div>
     <div class="form-group">
       <label for="detectorSerial">Detector Serial Number:</label>
-      <input type="text" id="detectorSerial" placeholder="e.g., DET-67890">
+      <input type="text" id="detectorSerial" placeholder="e.g., DET-67890" readonly style="background: #f5f5f5;">
     </div>
   </div>
+  <div class="info-note">ℹ️ These fields are auto-populated from your PDF certificate.</div>
 
-  <!-- Temperature Section -->
-  <h2>🌡️ Step 3: Temperature Data</h2>
+  <hr>
+
+  <!-- Temperature Section (Auto-filled from PDF) -->
+  <h2>🌡️ Step 3: Temperature Data (Auto-filled from PDF)</h2>
   <div class="two-column">
     <div class="form-group">
       <label for="ambientTemp">Ambient Temperature (°C):</label>
-      <input type="number" id="ambientTemp" placeholder="e.g., 20" step="0.1">
+      <input type="number" id="ambientTemp" placeholder="e.g., 20" readonly style="background: #f5f5f5;" step="0.1">
     </div>
     <div class="form-group">
       <label for="elevatedTemp">Elevated/High Temperature (°C):</label>
-      <input type="number" id="elevatedTemp" placeholder="e.g., 60" step="0.1">
+      <input type="number" id="elevatedTemp" placeholder="e.g., 60" readonly style="background: #f5f5f5;" step="0.1">
     </div>
   </div>
-  <div class="temp-note">
-    ⚠️ Calculations will use the Elevated/High Temperature data for accurate downhole performance assessment.
-  </div>
+  <div class="info-note">ℹ️ Calculations will use the Elevated/High Temperature data for accurate downhole performance assessment.</div>
 
-  <!-- Activity Section -->
-  <h2>⚛️ Step 4: Original Activity</h2>
+  <hr>
+
+  <!-- Activity Section (Auto-filled from PDF) -->
+  <h2>⚛️ Step 4: Original Activity (Auto-filled from PDF)</h2>
   <div class="two-column">
     <div class="form-group">
       <label for="activity">Original Activity (nCi):</label>
-      <input type="number" id="activity" value="230" step="0.01" min="0">
+      <input type="number" id="activity" step="0.01" min="0" readonly style="background: #f5f5f5;">
     </div>
     <div class="form-group">
       <label for="referenceDate">Reference Date (YYYY-MM-DD):</label>
-      <input type="text" id="referenceDate" placeholder="2018-01-15">
+      <input type="text" id="referenceDate" placeholder="2018-01-15" readonly style="background: #f5f5f5;">
     </div>
   </div>
+  <div class="info-note">ℹ️ These fields are auto-populated from your PDF certificate.</div>
 
-  <!-- Count Section -->
-  <h2>📊 Step 5: Count Data (High Temp)</h2>
+  <hr>
+
+  <!-- Count Section (Auto-filled from PDF) -->
+  <h2>📊 Step 5: Original Count @ High Temp (Auto-filled from PDF)</h2>
+  <div class="form-group">
+    <label for="originalCount">Original Count @ High Temp (cps):</label>
+    <input type="number" id="originalCount" step="0.1" min="0" readonly style="background: #f5f5f5;">
+  </div>
+  <div class="info-note">ℹ️ This field is auto-populated from your PDF certificate.</div>
+
+  <hr>
+
+  <!-- Limit Thresholds Section (Manual Entry) -->
+  <h2>⚙️ Step 6: Limit Thresholds (Manual Entry)</h2>
   <div class="two-column">
     <div class="form-group">
-      <label for="originalCount">Original Count @ High Temp (cps):</label>
-      <input type="number" id="originalCount" value="99" step="0.1" min="0">
+      <label for="lowLimit">Low Limit (cps):</label>
+      <input type="number" id="lowLimit" placeholder="e.g., 60" step="0.1" min="0">
     </div>
     <div class="form-group">
-      <label for="limitCount">Limit Threshold (cps):</label>
-      <input type="number" id="limitCount" value="80" step="0.1" min="0">
+      <label for="highLimit">High Limit (cps):</label>
+      <input type="number" id="highLimit" placeholder="e.g., 80" step="0.1" min="0">
     </div>
   </div>
+  <div class="manual-note">⚠️ Please enter your desired Low and High limit thresholds for this calculation.</div>
 
   <div class="button-group" style="margin-top: 20px;">
     <button onclick="calculate()">📊 Calculate Results</button>
@@ -441,11 +459,15 @@
         <div class="result-value" id="resultCurrCount">-<span class="result-unit">cps</span></div>
       </div>
       <div class="result-item">
-        <div class="result-label">Limit Threshold</div>
-        <div class="result-value" id="resultLimitCount">-<span class="result-unit">cps</span></div>
+        <div class="result-label">Low Limit</div>
+        <div class="result-value" id="resultLowLimit">-<span class="result-unit">cps</span></div>
       </div>
       <div class="result-item">
-        <div class="result-label">Years Remaining</div>
+        <div class="result-label">High Limit</div>
+        <div class="result-value" id="resultHighLimit">-<span class="result-unit">cps</span></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Years Remaining (to High Limit)</div>
         <div class="result-value" id="resultYearsRemaining">-<span class="result-unit">yrs</span></div>
       </div>
       <div class="result-item">
@@ -567,7 +589,7 @@ async function analyzePDF() {
     pdfInfo.innerHTML = `✓ PDF loaded: ${file.name} (${pdf.numPages} page${pdf.numPages > 1 ? 's' : ''})`;
     pdfInfo.style.display = 'block';
     
-    showMessage('PDF processed successfully! Fields auto-filled where possible.', 'success');
+    showMessage('PDF processed successfully! Fields auto-filled from certificate.', 'success');
 
   } catch (error) {
     showMessage(`Error reading PDF: ${error.message}`, 'error');
@@ -635,51 +657,62 @@ function calculate() {
   const activity = parseFloat(document.getElementById('activity').value);
   const referenceDate = document.getElementById('referenceDate').value.trim();
   const originalCount = parseFloat(document.getElementById('originalCount').value);
-  const limitCount = parseFloat(document.getElementById('limitCount').value);
+  const lowLimit = parseFloat(document.getElementById('lowLimit').value);
+  const highLimit = parseFloat(document.getElementById('highLimit').value);
 
   // Validation
   if (!sourceSerial) {
-    showResultMessage('❌ Please enter Source Serial Number.', 'error');
+    showResultMessage('❌ Please ensure Source Serial Number is populated from PDF.', 'error');
     return;
   }
 
   if (!detectorSerial) {
-    showResultMessage('❌ Please enter Detector Serial Number.', 'error');
+    showResultMessage('❌ Please ensure Detector Serial Number is populated from PDF.', 'error');
     return;
   }
 
   if (isNaN(ambientTemp)) {
-    showResultMessage('❌ Please enter Ambient Temperature.', 'error');
+    showResultMessage('❌ Please ensure Ambient Temperature is populated from PDF.', 'error');
     return;
   }
 
   if (isNaN(elevatedTemp)) {
-    showResultMessage('❌ Please enter Elevated/High Temperature.', 'error');
+    showResultMessage('❌ Please ensure Elevated/High Temperature is populated from PDF.', 'error');
     return;
   }
 
   if (isNaN(activity) || activity <= 0) {
-    showResultMessage('❌ Please enter a valid positive Activity (nCi).', 'error');
+    showResultMessage('❌ Please ensure Original Activity is populated from PDF.', 'error');
     return;
   }
 
   if (!referenceDate || !validateDate(referenceDate)) {
-    showResultMessage('❌ Please enter a valid Reference Date (YYYY-MM-DD).', 'error');
+    showResultMessage('❌ Please ensure Reference Date is populated from PDF (YYYY-MM-DD).', 'error');
     return;
   }
 
   if (isNaN(originalCount) || originalCount <= 0) {
-    showResultMessage('❌ Please enter a valid positive Original Count @ High Temp (cps).', 'error');
+    showResultMessage('❌ Please ensure Original Count @ High Temp is populated from PDF.', 'error');
     return;
   }
 
-  if (isNaN(limitCount) || limitCount < 0) {
-    showResultMessage('❌ Please enter a valid Limit Threshold (cps).', 'error');
+  if (isNaN(lowLimit) || lowLimit < 0) {
+    showResultMessage('❌ Please enter a valid Low Limit (cps).', 'error');
     return;
   }
 
-  if (limitCount >= originalCount) {
-    showResultMessage('❌ Limit Threshold must be less than Original Count.', 'error');
+  if (isNaN(highLimit) || highLimit < 0) {
+    showResultMessage('❌ Please enter a valid High Limit (cps).', 'error');
+    return;
+  }
+
+  if (lowLimit >= highLimit) {
+    showResultMessage('❌ Low Limit must be less than High Limit.', 'error');
+    return;
+  }
+
+  if (highLimit >= originalCount) {
+    showResultMessage('❌ High Limit must be less than Original Count.', 'error');
     return;
   }
 
@@ -700,34 +733,38 @@ function calculate() {
     const currentActivity = activity * decayFactor;
     const currentCount = originalCount * decayFactor;
 
-    // Calculate remaining years until threshold
+    // Calculate remaining years until high limit threshold
     let yearsRemaining = 'N/A';
     let thresholdDate = 'N/A';
     let status = 'N/A';
     let statusClass = '';
 
-    if (currentCount > limitCount) {
-      yearsRemaining = CS137_HALF_LIFE * Math.log(limitCount / currentCount) / Math.log(0.5);
+    if (currentCount > highLimit) {
+      yearsRemaining = CS137_HALF_LIFE * Math.log(highLimit / currentCount) / Math.log(0.5);
       const futureDate = new Date(today.getTime() + yearsRemaining * 365.25 * 24 * 60 * 60 * 1000);
       thresholdDate = formatDate(futureDate);
       
       if (yearsRemaining < 1) {
-        status = `${(yearsRemaining * 12).toFixed(1)} months`;
+        status = `${(yearsRemaining * 12).toFixed(1)} months remaining`;
         statusClass = 'danger';
       } else if (yearsRemaining < 5) {
-        status = `${yearsRemaining.toFixed(1)} years`;
+        status = `${yearsRemaining.toFixed(1)} years remaining`;
         statusClass = 'warning';
       } else {
-        status = `${yearsRemaining.toFixed(1)} years`;
+        status = `${yearsRemaining.toFixed(1)} years remaining`;
         statusClass = 'success';
       }
-    } else if (Math.abs(currentCount - limitCount) < 0.1) {
+    } else if (Math.abs(currentCount - highLimit) < 0.1) {
       yearsRemaining = 0;
       thresholdDate = formatDate(today);
-      status = 'At Threshold';
+      status = 'At High Limit';
       statusClass = 'danger';
+    } else if (currentCount > lowLimit) {
+      status = 'Between Low & High Limit';
+      statusClass = 'warning';
+      yearsRemaining = 'At Risk';
     } else {
-      status = 'Below Threshold ⚠️';
+      status = 'Below Low Limit ⚠️';
       statusClass = 'danger';
       yearsRemaining = 'Expired';
     }
@@ -749,10 +786,12 @@ function calculate() {
       `${originalCount.toFixed(2)}<span class="result-unit">cps</span>`;
     document.getElementById('resultCurrCount').innerHTML = 
       `${currentCount.toFixed(2)}<span class="result-unit">cps</span>`;
-    document.getElementById('resultLimitCount').innerHTML = 
-      `${limitCount.toFixed(2)}<span class="result-unit">cps</span>`;
+    document.getElementById('resultLowLimit').innerHTML = 
+      `${lowLimit.toFixed(2)}<span class="result-unit">cps</span>`;
+    document.getElementById('resultHighLimit').innerHTML = 
+      `${highLimit.toFixed(2)}<span class="result-unit">cps</span>`;
     document.getElementById('resultYearsRemaining').innerHTML = 
-      yearsRemaining === 'Expired' ? 'Expired' : 
+      yearsRemaining === 'Expired' || yearsRemaining === 'At Risk' ? yearsRemaining : 
       (typeof yearsRemaining === 'number' ? `${yearsRemaining.toFixed(2)}<span class="result-unit">yrs</span>` : yearsRemaining);
     document.getElementById('resultThresholdDate').innerHTML = thresholdDate;
     document.getElementById('resultStatus').innerHTML = status;
@@ -776,10 +815,11 @@ function resetForm() {
   document.getElementById('detectorSerial').value = '';
   document.getElementById('ambientTemp').value = '';
   document.getElementById('elevatedTemp').value = '';
-  document.getElementById('activity').value = '230';
+  document.getElementById('activity').value = '';
   document.getElementById('referenceDate').value = '';
-  document.getElementById('originalCount').value = '99';
-  document.getElementById('limitCount').value = '80';
+  document.getElementById('originalCount').value = '';
+  document.getElementById('lowLimit').value = '';
+  document.getElementById('highLimit').value = '';
   document.getElementById('result').classList.remove('show');
   document.getElementById('resultMessage').classList.remove('show');
   document.getElementById('pdfMessage').classList.remove('show');
