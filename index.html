@@ -87,6 +87,76 @@ ${remaining.toFixed(2)} years
 
 }
 
+async function analyzePDF() {
+
+const file =
+document.getElementById("pdfFile").files[0];
+
+if(!file){
+alert("Please select a PDF");
+return;
+}
+
+const buffer =
+await file.arrayBuffer();
+
+const pdf =
+await pdfjsLib.getDocument({
+data: buffer
+}).promise;
+
+let text="";
+
+for(let i=1;i<=pdf.numPages;i++){
+
+const page =
+await pdf.getPage(i);
+
+const content =
+await page.getTextContent();
+
+text += content.items
+.map(item => item.str)
+.join(" ");
+
+}
+
+extractData(text);
+
+}
+function extractData(text){
+
+console.log(text);
+
+let activityMatch =
+text.match(/(\d+)\s*nCi/i);
+
+let dateMatch =
+text.match(/\d{4}-\d{2}-\d{2}/);
+
+if(!activityMatch){
+
+alert("Activity not found");
+
+return;
+
+}
+
+let activity =
+parseFloat(activityMatch[1]);
+
+let year =
+new Date(dateMatch[0]).getFullYear();
+
+document.getElementById("activity").value =
+activity;
+
+document.getElementById("year").value =
+year;
+
+calculate();
+
+}
 </script>
 
 </body>
