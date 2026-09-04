@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cs137 Life Calculator</title>
+</head>
+<body>
+
+<h1>Cs137 Source Calculator</h1>
+
+Original Activity (nCi):
+<input id="activity" value="230"><br><br>
+
+Reference Year:
+<input id="year" value="2018"><br><br>
+
+Original Count:
+<input id="count" value="99"><br><br>
+
+Limit Count:
+<input id="limit" value="80"><br><br>
+
+<button onclick="calc()">Calculate</button>
+
+<h2 id="result"></h2>
+
+<script>
+
+function calc(){
+
+let activity=parseFloat(
+document.getElementById("activity").value
+);
+
+let year=parseFloat(
+document.getElementById("year").value
+);
+
+let count=parseFloat(
+document.getElementById("count").value
+);
+
+let limit=parseFloat(
+document.getElementById("limit").value
+);
+
+let halfLife=30.17;
+
+let currentYear=new Date().getFullYear();
+
+let years=currentYear-year;
+
+let currentActivity=
+activity*Math.pow(0.5,years/halfLife);
+
+let currentCount=
+count*(currentActivity/activity);
+
+let remaining=
+halfLife*
+Math.log(limit/currentCount)/
+Math.log(0.5);
+
+document.getElementById("result").innerHTML=
+`
+Current Activity:
+${currentActivity.toFixed(1)} nCi<br>
+
+Current Count:
+${currentCount.toFixed(1)} cps<br>
+
+Years Remaining:
+${remaining.toFixed(2)} years
+`;
+
+}
+
+</script>
+
+</body>
+</html>
