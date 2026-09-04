@@ -1,167 +1,719 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Cs137 Life Calculator</title>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11 Life Calculator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.df.min.jsscript>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cs-137 Life Calculator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.4/pdf.min.js"></script>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    padding: 30px;
+  }
+
+  h1 {
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 14px;
+  }
+
+  hr {
+    margin: 25px 0;
+    border: none;
+    border-top: 2px solid #eee;
+  }
+
+  h2 {
+    color: #444;
+    font-size: 18px;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    border-left: 4px solid #667eea;
+    padding-left: 10px;
+  }
+
+  .form-group {
+    margin: 15px 0;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+  }
+
+  input[type="file"],
+  input[type="number"],
+  input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+  }
+
+  input[type="file"]:focus,
+  input[type="number"]:focus,
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex: 1;
+    min-width: 150px;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  button.secondary {
+    background: #f0f0f0;
+    color: #333;
+  }
+
+  button.secondary:hover {
+    background: #e0e0e0;
+  }
+
+  .dropzone {
+    border: 2px dashed #667eea;
+    border-radius: 5px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #f9f9f9;
+  }
+
+  .dropzone:hover {
+    border-color: #764ba2;
+    background: #f0f0ff;
+  }
+
+  .dropzone.active {
+    border-color: #28a745;
+    background: #f0fff0;
+  }
+
+  .dropzone p {
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .message {
+    padding: 12px 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+    font-size: 14px;
+    display: none;
+  }
+
+  .message.show {
+    display: block;
+  }
+
+  .message.error {
+    background-color: #fee;
+    color: #c33;
+    border-left: 4px solid #c33;
+  }
+
+  .message.success {
+    background-color: #efe;
+    color: #3c3;
+    border-left: 4px solid #3c3;
+  }
+
+  .message.info {
+    background-color: #eef;
+    color: #33c;
+    border-left: 4px solid #33c;
+  }
+
+  .message.warning {
+    background-color: #ffd;
+    color: #983;
+    border-left: 4px solid #983;
+  }
+
+  #result {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    display: none;
+  }
+
+  #result.show {
+    display: block;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+  }
+
+  .result-item {
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .result-label {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .result-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .result-unit {
+    font-size: 12px;
+    color: #999;
+    margin-left: 5px;
+  }
+
+  .result-item.warning {
+    border-left-color: #ffc107;
+    background: #fffbf0;
+  }
+
+  .result-item.danger {
+    border-left-color: #dc3545;
+    background: #fff5f5;
+  }
+
+  .result-item.success {
+    border-left-color: #28a745;
+    background: #f0fff4;
+  }
+
+  .two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .pdf-info {
+    background: #eef;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #33c;
+  }
+
+  @media (max-width: 600px) {
+    .two-column {
+      grid-template-columns: 1fr;
+    }
+    .result-grid {
+      grid-template-columns: 1fr;
+    }
+    .container {
+      padding: 20px;
+    }
+    button {
+      min-width: 100%;
+    }
+    .button-group {
+      flex-direction: column;
+    }
+  }
+</style>
 </head>
 <body>
 
-<h1>Cs137 Source Calculator</h1>
+<div class="container">
+  <h1>⚛️ Cs-137 Source Life Calculator</h1>
+  <p class="subtitle">Calculate remaining useful life of radioactive sources</p>
 
   <hr>
 
-<h2>Drop Certificate PDF</h2>
+  <!-- PDF Upload Section -->
+  <h2>📄 Step 1: Upload Certificate PDF</h2>
+  <div class="dropzone" id="dropzone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+    <p>📁 Drag and drop your PDF here or click to select</p>
+    <input type="file" id="pdfFile" accept=".pdf" style="display:none;">
+  </div>
+  <div id="pdfMessage" class="message"></div>
+  <div id="pdfInfo" class="pdf-info" style="display:none;"></div>
 
-<input type="file" id="pdfFile">
+  <hr>
 
-<button onclick="analyzePDF()">
-Analyze Certificate
-</button>
+  <!-- Source Information Section -->
+  <h2>📋 Step 2: Source Information</h2>
+  <div class="two-column">
+    <div class="form-group">
+      <label for="sourceSerial">Source Serial Number:</label>
+      <input type="text" id="sourceSerial" placeholder="e.g., CS-12345">
+    </div>
+    <div class="form-group">
+      <label for="detectorSerial">Detector Serial Number:</label>
+      <input type="text" id="detectorSerial" placeholder="e.g., DET-67890">
+    </div>
+  </div>
 
-<hr>
+  <!-- Activity Section -->
+  <h2>⚛️ Step 3: Original Activity</h2>
+  <div class="two-column">
+    <div class="form-group">
+      <label for="activity">Original Activity (nCi):</label>
+      <input type="number" id="activity" value="230" step="0.01" min="0">
+    </div>
+    <div class="form-group">
+      <label for="referenceDate">Reference Date (YYYY-MM-DD):</label>
+      <input type="text" id="referenceDate" placeholder="2018-01-15">
+    </div>
+  </div>
 
-Original Activity (nCi):
-<input id="activity" value="230"><br><br>
+  <!-- Count Section -->
+  <h2>📊 Step 4: Count Data</h2>
+  <div class="two-column">
+    <div class="form-group">
+      <label for="originalCount">Original Count (cps):</label>
+      <input type="number" id="originalCount" value="99" step="0.1" min="0">
+    </div>
+    <div class="form-group">
+      <label for="limitCount">Limit Threshold (cps):</label>
+      <input type="number" id="limitCount" value="80" step="0.1" min="0">
+    </div>
+  </div>
 
-Reference Year:
-<input id="year" value="2018"><br><br>
+  <div class="button-group" style="margin-top: 20px;">
+    <button onclick="calculate()">📊 Calculate Results</button>
+    <button class="secondary" onclick="resetForm()">🔄 Reset All</button>
+  </div>
 
-Original Count:
-<input id="count" value="99"><br><br>
+  <div id="resultMessage" class="message"></div>
 
-Limit Count:
-<input id="limit" value="80"><br><br>
+  <!-- Results Section -->
+  <div id="result">
+    <h2>✅ Calculation Results</h2>
+    <div class="result-grid">
+      <div class="result-item">
+        <div class="result-label">Original Activity</div>
+        <div class="result-value" id="resultOrigActivity">-<span class="result-unit">nCi</span></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Current Activity</div>
+        <div class="result-value" id="resultCurrActivity">-<span class="result-unit">nCi</span></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Years Elapsed</div>
+        <div class="result-value" id="resultYearsElapsed">-<span class="result-unit">yrs</span></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Decay Factor</div>
+        <div class="result-value" id="resultDecayFactor">-<span class="result-unit">%</span></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Original Count</div>
+        <div class="result-value" id="resultOrigCount">-<span class="result-unit">cps</span></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Current Count</div>
+        <div class="result-value" id="resultCurrCount">-<span class="result-unit">cps</span></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Limit Threshold</div>
+        <div class="result-value" id="resultLimitCount">-<span class="result-unit">cps</span></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Years Remaining</div>
+        <div class="result-value" id="resultYearsRemaining">-<span class="result-unit">yrs</span></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Threshold Date</div>
+        <div class="result-value" id="resultThresholdDate">-</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Status</div>
+        <div class="result-value" id="resultStatus">-</div>
+      </div>
+    </div>
+  </div>
 
-<button onclick="calc()">Calculate</button>
-
-<h2 id="result"></h2>
+</div>
 
 <script>
 
-function calc(){
+// Constants
+const CS137_HALF_LIFE = 30.17; // years
 
-let activity=parseFloat(
-document.getElementById("activity").value
-);
+// Set up PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = 
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.4/pdf.worker.min.js';
 
-let year=parseFloat(
-document.getElementById("year").value
-);
+// Drag and drop handlers
+const dropzone = document.getElementById('dropzone');
 
-let count=parseFloat(
-document.getElementById("count").value
-);
-
-let limit=parseFloat(
-document.getElementById("limit").value
-);
-
-let halfLife=30.17;
-
-let currentYear=new Date().getFullYear();
-
-let years=currentYear-year;
-
-let currentActivity=
-activity*Math.pow(0.5,years/halfLife);
-
-let currentCount=
-count*(currentActivity/activity);
-
-let remaining=
-halfLife*
-Math.log(limit/currentCount)/
-Math.log(0.5);
-
-document.getElementById("result").innerHTML=
-`
-Current Activity:
-${currentActivity.toFixed(1)} nCi<br>
-
-Current Count:
-${currentCount.toFixed(1)} cps<br>
-
-Years Remaining:
-${remaining.toFixed(2)} years
-`;
-
+function handleDragOver(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  dropzone.classList.add('active');
 }
 
+function handleDragLeave(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  dropzone.classList.remove('active');
+}
+
+function handleDrop(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  dropzone.classList.remove('active');
+  
+  const files = event.dataTransfer.files;
+  if (files.length > 0) {
+    document.getElementById('pdfFile').files = files;
+    analyzePDF();
+  }
+}
+
+dropzone.addEventListener('click', () => {
+  document.getElementById('pdfFile').click();
+});
+
+document.getElementById('pdfFile').addEventListener('change', analyzePDF);
+
+// Utility Functions
+function showMessage(message, type = 'info', targetId = 'pdfMessage') {
+  const msgDiv = document.getElementById(targetId);
+  msgDiv.className = `message show ${type}`;
+  msgDiv.textContent = message;
+  setTimeout(() => msgDiv.classList.remove('show'), 5000);
+}
+
+function showResultMessage(message, type = 'info') {
+  showMessage(message, type, 'resultMessage');
+}
+
+function validateDate(dateString) {
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!regex.test(dateString)) return false;
+  const date = new Date(dateString);
+  return date instanceof Date && !isNaN(date);
+}
+
+function parseDate(dateString) {
+  return new Date(dateString);
+}
+
+function formatDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
+// PDF Extraction
 async function analyzePDF() {
+  const file = document.getElementById('pdfFile').files[0];
 
-const file =
-document.getElementById("pdfFile").files[0];
+  if (!file) {
+    return;
+  }
 
-if(!file){
-alert("Please select a PDF");
-return;
+  if (!file.type.includes('pdf')) {
+    showMessage('Please select a valid PDF file.', 'error');
+    return;
+  }
+
+  try {
+    showMessage('Processing PDF...', 'info');
+
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    let fullText = '';
+
+    // Extract text from all pages
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .map(item => item.str)
+        .join(' ');
+      fullText += pageText + ' ';
+    }
+
+    extractCertificateData(fullText);
+    
+    const pdfInfo = document.getElementById('pdfInfo');
+    pdfInfo.innerHTML = `✓ PDF loaded: ${file.name} (${pdf.numPages} page${pdf.numPages > 1 ? 's' : ''})`;
+    pdfInfo.style.display = 'block';
+    
+    showMessage('PDF processed successfully! Fields auto-filled where possible.', 'success');
+
+  } catch (error) {
+    showMessage(`Error reading PDF: ${error.message}`, 'error');
+    console.error(error);
+  }
 }
 
-const buffer =
-await file.arrayBuffer();
+function extractCertificateData(text) {
+  // Extract Source Serial Number
+  let sourceMatch = text.match(/source\s*(?:serial\s*)?(?:number|no\.?|#)?[:\s]+([A-Z0-9\-]+)/i);
+  if (sourceMatch) {
+    const value = sourceMatch[1].trim();
+    if (value.length > 0) {
+      document.getElementById('sourceSerial').value = value;
+    }
+  }
 
-const pdf =
-await pdfjsLib.getDocument({
-data: buffer
-}).promise;
+  // Extract Detector Serial Number
+  let detectorMatch = text.match(/detector\s*(?:serial\s*)?(?:number|no\.?|#)?[:\s]+([A-Z0-9\-]+)/i);
+  if (detectorMatch) {
+    const value = detectorMatch[1].trim();
+    if (value.length > 0) {
+      document.getElementById('detectorSerial').value = value;
+    }
+  }
 
-let text="";
+  // Extract Activity (nCi) - with decimal support
+  let activityMatch = text.match(/(\d+(?:\.\d+)?)\s*nCi/i);
+  if (activityMatch) {
+    document.getElementById('activity').value = parseFloat(activityMatch[1]).toFixed(2);
+  }
 
-for(let i=1;i<=pdf.numPages;i++){
+  // Extract Date (YYYY-MM-DD format or other formats)
+  let dateMatch = text.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (dateMatch) {
+    document.getElementById('referenceDate').value = dateMatch[0];
+  }
 
-const page =
-await pdf.getPage(i);
-
-const content =
-await page.getTextContent();
-
-text += content.items
-.map(item => item.str)
-.join(" ");
-
+  // Extract Count (cps) - optional
+  let countMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:cps|counts?)/i);
+  if (countMatch) {
+    document.getElementById('originalCount').value = parseFloat(countMatch[1]).toFixed(1);
+  }
 }
 
-extractData(text);
+// Calculation Function
+function calculate() {
+  const resultDiv = document.getElementById('result');
+  const sourceSerial = document.getElementById('sourceSerial').value.trim();
+  const detectorSerial = document.getElementById('detectorSerial').value.trim();
+  const activity = parseFloat(document.getElementById('activity').value);
+  const referenceDate = document.getElementById('referenceDate').value.trim();
+  const originalCount = parseFloat(document.getElementById('originalCount').value);
+  const limitCount = parseFloat(document.getElementById('limitCount').value);
 
+  // Validation
+  if (!sourceSerial) {
+    showResultMessage('❌ Please enter Source Serial Number.', 'error');
+    return;
+  }
+
+  if (!detectorSerial) {
+    showResultMessage('❌ Please enter Detector Serial Number.', 'error');
+    return;
+  }
+
+  if (isNaN(activity) || activity <= 0) {
+    showResultMessage('❌ Please enter a valid positive Activity (nCi).', 'error');
+    return;
+  }
+
+  if (!referenceDate || !validateDate(referenceDate)) {
+    showResultMessage('❌ Please enter a valid Reference Date (YYYY-MM-DD).', 'error');
+    return;
+  }
+
+  if (isNaN(originalCount) || originalCount <= 0) {
+    showResultMessage('❌ Please enter a valid positive Original Count (cps).', 'error');
+    return;
+  }
+
+  if (isNaN(limitCount) || limitCount < 0) {
+    showResultMessage('❌ Please enter a valid Limit Threshold (cps).', 'error');
+    return;
+  }
+
+  if (limitCount >= originalCount) {
+    showResultMessage('❌ Limit Threshold must be less than Original Count.', 'error');
+    return;
+  }
+
+  try {
+    // Calculate current activity
+    const refDate = parseDate(referenceDate);
+    const today = new Date();
+    
+    // Check if reference date is in the future
+    if (refDate > today) {
+      showResultMessage('❌ Reference Date cannot be in the future.', 'error');
+      return;
+    }
+
+    const yearsElapsed = (today - refDate) / (365.25 * 24 * 60 * 60 * 1000);
+
+    const decayFactor = Math.pow(0.5, yearsElapsed / CS137_HALF_LIFE);
+    const currentActivity = activity * decayFactor;
+    const currentCount = originalCount * decayFactor;
+
+    // Calculate remaining years until threshold
+    let yearsRemaining = 'N/A';
+    let thresholdDate = 'N/A';
+    let status = 'N/A';
+    let statusClass = '';
+
+    if (currentCount > limitCount) {
+      yearsRemaining = CS137_HALF_LIFE * Math.log(limitCount / currentCount) / Math.log(0.5);
+      const futureDate = new Date(today.getTime() + yearsRemaining * 365.25 * 24 * 60 * 60 * 1000);
+      thresholdDate = formatDate(futureDate);
+      
+      if (yearsRemaining < 1) {
+        status = `${(yearsRemaining * 12).toFixed(1)} months`;
+        statusClass = 'danger';
+      } else if (yearsRemaining < 5) {
+        status = `${yearsRemaining.toFixed(1)} years`;
+        statusClass = 'warning';
+      } else {
+        status = `${yearsRemaining.toFixed(1)} years`;
+        statusClass = 'success';
+      }
+    } else if (Math.abs(currentCount - limitCount) < 0.1) {
+      yearsRemaining = 0;
+      thresholdDate = formatDate(today);
+      status = 'At Threshold';
+      statusClass = 'danger';
+    } else {
+      status = 'Below Threshold ⚠️';
+      statusClass = 'danger';
+      yearsRemaining = 'Expired';
+    }
+
+    // Display results
+    document.getElementById('resultOrigActivity').innerHTML = 
+      `${activity.toFixed(2)}<span class="result-unit">nCi</span>`;
+    document.getElementById('resultCurrActivity').innerHTML = 
+      `${currentActivity.toFixed(2)}<span class="result-unit">nCi</span>`;
+    document.getElementById('resultYearsElapsed').innerHTML = 
+      `${yearsElapsed.toFixed(2)}<span class="result-unit">yrs</span>`;
+    document.getElementById('resultDecayFactor').innerHTML = 
+      `${(decayFactor * 100).toFixed(1)}<span class="result-unit">%</span>`;
+    document.getElementById('resultOrigCount').innerHTML = 
+      `${originalCount.toFixed(2)}<span class="result-unit">cps</span>`;
+    document.getElementById('resultCurrCount').innerHTML = 
+      `${currentCount.toFixed(2)}<span class="result-unit">cps</span>`;
+    document.getElementById('resultLimitCount').innerHTML = 
+      `${limitCount.toFixed(2)}<span class="result-unit">cps</span>`;
+    document.getElementById('resultYearsRemaining').innerHTML = 
+      yearsRemaining === 'Expired' ? 'Expired' : 
+      (typeof yearsRemaining === 'number' ? `${yearsRemaining.toFixed(2)}<span class="result-unit">yrs</span>` : yearsRemaining);
+    document.getElementById('resultThresholdDate').innerHTML = thresholdDate;
+    document.getElementById('resultStatus').innerHTML = status;
+
+    resultDiv.classList.add('show');
+
+    // Apply status class to status item
+    const statusElement = document.getElementById('resultStatus').parentElement;
+    statusElement.className = 'result-item ' + statusClass;
+
+    showResultMessage('✅ Calculation successful!', 'success');
+
+  } catch (error) {
+    showResultMessage(`❌ Calculation error: ${error.message}`, 'error');
+    console.error(error);
+  }
 }
-function extractData(text){
 
-console.log(text);
-
-let activityMatch =
-text.match(/(\d+)\s*nCi/i);
-
-let dateMatch =
-text.match(/\d{4}-\d{2}-\d{2}/);
-
-if(!activityMatch){
-
-alert("Activity not found");
-
-return;
-
+function resetForm() {
+  document.getElementById('sourceSerial').value = '';
+  document.getElementById('detectorSerial').value = '';
+  document.getElementById('activity').value = '230';
+  document.getElementById('referenceDate').value = '';
+  document.getElementById('originalCount').value = '99';
+  document.getElementById('limitCount').value = '80';
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('resultMessage').classList.remove('show');
+  document.getElementById('pdfMessage').classList.remove('show');
+  document.getElementById('pdfInfo').style.display = 'none';
+  document.getElementById('pdfFile').value = '';
 }
 
-let activity =
-parseFloat(activityMatch[1]);
-
-let year =
-new Date(dateMatch[0]).getFullYear();
-
-alert("Activity Found: " + activity);
-8
-alert("Year Found: " + year);
-
-document.getElementById("activity").value =
-activity;
-
-document.getElementById("year").value =
-year;
-
-calc();
-
-}
 </script>
 
 </body>
