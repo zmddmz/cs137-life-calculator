@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cs-137 Life Calculator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.4/pdf.min.js"></script>
+ <script src="httpsvr.net/npm/chart.jsscript>
 <style>
   * {
     margin: 0;
@@ -482,12 +483,23 @@
   </div>
 
 </div>
+<hr>
 
+<h2>📈 Source Count Projection</h2>
+
+<div style="
+    margin-top:20px;
+    background:white;
+    padding:20px;
+    border-radius:8px;
+">
+    <canvas id="trendChart"></canvas>
+</div>
 <script>
 
 // Constants
 const CS137_HALF_LIFE = 30.17; // years
-
+const DETECTOR_DRIFT_PER_YEAR = 0.002;
 // Set up PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = 
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.4/pdf.worker.min.js';
@@ -599,52 +611,135 @@ async function analyzePDF() {
 
 function extractCertificateData(text) {
   // Extract Source Serial Number
-  let sourceMatch = text.match(/source\s*(?:serial\s*)?(?:number|no\.?|#)?[:\s]+([A-Z0-9\-]+)/i);
-  if (sourceMatch) {
-    const value = sourceMatch[1].trim();
-    if (value.length > 0) {
-      document.getElementById('sourceSerial').value = value;
+  function extractCertificateData(text)
+{
+    text = text.replace(/\s+/g, " ");
+
+    const sourcePatterns =
+    [
+        /source\s*(?:serial|s\/n|sn|id|number|no\.?)[:\s]+([A-Z0-9\-]+)/i,
+        /radioactive\s*source[:\s]+([A-Z0-9\-]+)/i
+    ];
+
+    for(const pattern of sourcePatterns)
+    {
+        const match = text.match(pattern);
+
+        if(match)
+        {
+            document.getElementById(
+                "sourceSerial"
+            ).value = match[1];
+
+            break;
+        }
     }
-  }
 
-  // Extract Detector Serial Number
-  let detectorMatch = text.match(/detector\s*(?:serial\s*)?(?:number|no\.?|#)?[:\s]+([A-Z0-9\-]+)/i);
-  if (detectorMatch) {
-    const value = detectorMatch[1].trim();
-    if (value.length > 0) {
-      document.getElementById('detectorSerial').value = value;
+    const detectorPatterns =
+    [
+        /detector\s*(?:serial|s\/n|sn|id|number|no\.?)[:\s]+([A-Z0-9\-]+)/i,
+        /probe\s*(?:serial|id)?[:\s]+([A-Z0-9\-]+)/i
+    ];
+
+    for(const pattern of detectorPatterns)
+    {
+        const match = text.match(pattern);
+
+        if(match)
+        {
+            document.getElementById(
+                "detectorSerial"
+            ).value = match[1];
+
+            break;
+        }
     }
-  }
 
-  // Extract Activity (nCi) - with decimal support
-  let activityMatch = text.match(/(\d+(?:\.\d+)?)\s*nCi/i);
-  if (activityMatch) {
-    document.getElementById('activity').value = parseFloat(activityMatch[1]).toFixed(2);
-  }
+    const activityMatch =
+        text.match(
+        /(\d+(?:\.\d+)?(?:E[+-]?\d+)?)\s*(?:nCi|nano\s*curies?)/i
+        );
 
-  // Extract Date (YYYY-MM-DD format or other formats)
-  let dateMatch = text.match(/(\d{4})-(\d{2})-(\d{2})/);
-  if (dateMatch) {
-    document.getElementById('referenceDate').value = dateMatch[0];
-  }
+    if(activityMatch)
+    {
+        document.getElementById(
+            "activity"
+        ).value =
+        parseFloat(activityMatch[1]).toFixed(2);
+    }
 
-  // Extract Ambient Temperature (°C)
-  let ambientTempMatch = text.match(/(?:ambient|room)\s*(?:temperature|temp)?[:\s]+(\d+(?:\.\d+)?)\s*°?C/i);
-  if (ambientTempMatch) {
-    document.getElementById('ambientTemp').value = parseFloat(ambientTempMatch[1]).toFixed(1);
-  }
+    const datePatterns =
+    [
+        /\d{4}-\d{2}-\d{2}/,
+        /\d{2}-[A-Za-z]{3}-\d{4}/,
+        /[A-Za-z]{3,9}\s+\d{1,2},\s+\d{4}/,
+        /\d{2}\/\d{2}\/\d{4}/
+    ];
 
-  // Extract Elevated/High Temperature (°C)
-  let elevatedTempMatch = text.match(/(?:elevated|high|maximum|max)\s*(?:temperature|temp)?[:\s]+(\d+(?:\.\d+)?)\s*°?C/i);
-  if (elevatedTempMatch) {
-    document.getElementById('elevatedTemp').value = parseFloat(elevatedTempMatch[1]).toFixed(1);
-  }
+    for(const pattern of datePatterns)
+    {
+        const match = text.match(pattern);
 
-  // Extract Count (cps) - High Temperature version
-  let countMatch = text.match(/(?:high|elevated)?\s*(?:count|cps)[:\s]+(\d+(?:\.\d+)?)\s*(?:cps|counts?)?/i);
-  if (countMatch) {
-    document.getElementById('originalCount').value = parseFloat(countMatch[1]).toFixed(1);
-  }
+        if(match)
+        {
+            document.getElementById(
+                "referenceDate"
+            ).value = new Date(match[0])
+                .toISOString()
+                .split("T")[0];
+
+            break;
+        }
+    }
+
+    const ambientMatch =
+        text.match(
+        /(?:ambient|room)\s*(?:temperature|temp)?[:\s]+(-?\d+(?:\.\d+)?)\s*°?\s*C/i
+        );
+
+    if(ambientMatch)
+    {
+        document.getElementById(
+            "ambientTemp"
+        ).value =
+        parseFloat(ambientMatch[1]).toFixed(1);
+    }
+
+    const highMatch =
+        text.match(
+        /(?:high|elevated|max(?:imum)?|operating)\s*(?:temperature|temp)?[:\s]+(-?\d+(?:\.\d+)?)\s*°?\s*C/i
+        );
+
+    if(highMatch)
+    {
+        document.getElementById(
+            "elevatedTemp"
+        ).value =
+        parseFloat(highMatch[1]).toFixed(1);
+    }
+
+    const countPatterns =
+    [
+        /source\s*count[:\s]+(\d+(?:\.\d+)?)\s*cps/i,
+        /calibration\s*count[:\s]+(\d+(?:\.\d+)?)\s*cps/i,
+        /count\s*rate[:\s]+(\d+(?:\.\d+)?)\s*cps/i,
+        /high\s*temp.*?(\d+(?:\.\d+)?)\s*cps/i
+    ];
+
+    for(const pattern of countPatterns)
+    {
+        const match = text.match(pattern);
+
+        if(match)
+        {
+            document.getElementById(
+                "originalCount"
+            ).value =
+            parseFloat(match[1]).toFixed(1);
+
+            break;
+        }
+    }
 }
 
 // Calculation Function
@@ -730,8 +825,22 @@ function calculate() {
     const yearsElapsed = (today - refDate) / (365.25 * 24 * 60 * 60 * 1000);
 
     const decayFactor = Math.pow(0.5, yearsElapsed / CS137_HALF_LIFE);
-    const currentActivity = activity * decayFactor;
-    const currentCount = originalCount * decayFactor;
+   const detectorFactor =
+Math.pow(
+    1 - DETECTOR_DRIFT_PER_YEAR,
+    yearsElapsed
+);
+
+const currentActivity =
+activity * decayFactor;
+
+const currentCount =
+originalCount *
+decayFactor *
+detectorFactor;
+
+const activityLoss =
+(1 - decayFactor) * 100;
 
     // Calculate remaining years until high limit threshold
     let yearsRemaining = 'N/A';
@@ -739,35 +848,49 @@ function calculate() {
     let status = 'N/A';
     let statusClass = '';
 
-    if (currentCount > highLimit) {
-      yearsRemaining = CS137_HALF_LIFE * Math.log(highLimit / currentCount) / Math.log(0.5);
-      const futureDate = new Date(today.getTime() + yearsRemaining * 365.25 * 24 * 60 * 60 * 1000);
-      thresholdDate = formatDate(futureDate);
-      
-      if (yearsRemaining < 1) {
-        status = `${(yearsRemaining * 12).toFixed(1)} months remaining`;
-        statusClass = 'danger';
-      } else if (yearsRemaining < 5) {
-        status = `${yearsRemaining.toFixed(1)} years remaining`;
-        statusClass = 'warning';
-      } else {
-        status = `${yearsRemaining.toFixed(1)} years remaining`;
-        statusClass = 'success';
-      }
-    } else if (Math.abs(currentCount - highLimit) < 0.1) {
-      yearsRemaining = 0;
-      thresholdDate = formatDate(today);
-      status = 'At High Limit';
-      statusClass = 'danger';
-    } else if (currentCount > lowLimit) {
-      status = 'Between Low & High Limit';
-      statusClass = 'warning';
-      yearsRemaining = 'At Risk';
-    } else {
-      status = 'Below Low Limit ⚠️';
-      statusClass = 'danger';
-      yearsRemaining = 'Expired';
-    }
+    if (currentCount > highLimit) 
+     if(currentCount > highLimit)
+{
+    status = "HEALTHY";
+    statusClass = "success";
+
+    yearsRemaining =
+    CS137_HALF_LIFE *
+    Math.log(
+        highLimit/currentCount
+    ) /
+    Math.log(0.5);
+
+    const futureDate =
+        new Date(
+            today.getTime() +
+            yearsRemaining *
+            365.25 *
+            24 *
+            60 *
+            60 *
+            1000
+        );
+
+    thresholdDate =
+        formatDate(futureDate);
+}
+else if(currentCount > lowLimit)
+{
+    status = "WARNING";
+    statusClass = "warning";
+
+    yearsRemaining =
+        "At Risk";
+}
+else
+{
+    status = "EXPIRED";
+    statusClass = "danger";
+
+    yearsRemaining =
+        "Expired";
+}
 
     // Display results
     document.getElementById('resultAmbientTemp').innerHTML = 
