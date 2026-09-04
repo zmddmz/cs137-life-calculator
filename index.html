@@ -431,6 +431,11 @@
         <div class="result-label">Ambient Temp</div>
         <div class="result-value" id="resultAmbientTemp">-<span class="result-unit">°C</span></div>
       </div>
+ document.getElementById(
+    "resultActivityLoss"
+).innerHTML =
+`${activityLoss.toFixed(1)}
+<span class="result-unit">%</span>`;
       <div class="result-item">
         <div class="result-label">High Temp (Used)</div>
         <div class="result-value" id="resultElevatedTemp">-<span class="result-unit">°C</span></div>
@@ -756,6 +761,13 @@ function calculate() {
   const highLimit = parseFloat(document.getElementById('highLimit').value);
 
   // Validation
+generateTrendGraph(
+    originalCount,
+    lowLimit,
+    highLimit
+);
+``
+ 
   if (!sourceSerial) {
     showResultMessage('❌ Please ensure Source Serial Number is populated from PDF.', 'error');
     return;
@@ -948,6 +960,83 @@ function resetForm() {
   document.getElementById('pdfMessage').classList.remove('show');
   document.getElementById('pdfInfo').style.display = 'none';
   document.getElementById('pdfFile').value = '';
+}
+let trendChart = null;
+
+function generateTrendGraph(
+    originalCount,
+    lowLimit,
+    highLimit
+)
+{
+    const labels = [];
+    const values = [];
+
+    for(let year=0; year<=40; year++)
+    {
+        labels.push(year);
+
+        values.push(
+            originalCount *
+            Math.pow(
+                0.5,
+                year / CS137_HALF_LIFE
+            )
+        );
+    }
+
+    const ctx =
+        document
+        .getElementById("trendChart")
+        .getContext("2d");
+
+    if(trendChart)
+    {
+        trendChart.destroy();
+    }
+
+    trendChart =
+        new Chart(ctx,{
+            type:"line",
+
+            data:{
+                labels:labels,
+
+                datasets:[
+                {
+                    label:
+                    "Predicted Count",
+
+                    data:values,
+
+                    borderColor:"#667eea",
+
+                    tension:0.3
+                },
+                {
+                    label:"High Limit",
+
+                    data:new Array(
+                        labels.length
+                    ).fill(highLimit),
+
+                    borderColor:"#ff9800",
+
+                    borderDash:[5,5]
+                },
+                {
+                    label:"Low Limit",
+
+                    data:new Array(
+                        labels.length
+                    ).fill(lowLimit),
+
+                    borderColor:"#dc3545",
+
+                    borderDash:[5,5]
+                }]
+            }
+        });
 }
 
 </script>
